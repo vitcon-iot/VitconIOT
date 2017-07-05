@@ -140,8 +140,14 @@ void BrokerComm::SendData()
   uint16_t len = 1;
   for (uint8_t i = 0; i < mItemCount; i++)
   {
-    if ((mItems[i]->GetItemInfo() & IOTItem::TYPE_W) == 0)
+    uint8_t type = mItems[i]->GetItemInfo() & 0xFF;
+    if ((type & IOTItem::TYPE_W) == 0
+        && type != IOTItem::TYPE_PSH // 읽기 전용이고 푸시 알람이 아니면 데이터를 서버로 전송
+      || type == IOTItem::TYPE_PSH
+        && mItems[i]->GetData()[0] != '\0') // 푸시알람은 보낼 데이터가 있을 때만 보냄  
+    {
       len += mItems[i]->GetLength() + 2; // index(1byte) + length(1byte) + data(len)
+    }
   }
 
   CRC32 crc(SendHeader(len));
@@ -154,9 +160,13 @@ void BrokerComm::SendData()
   // Send data
   for (uint8_t i = 0; i < mItemCount; i++)
   {
-    if ((mItems[i]->GetItemInfo() & IOTItem::TYPE_W) == 0)
+    uint8_t l = mItems[i]->GetLength();
+    uint8_t type = mItems[i]->GetItemInfo() & 0xFF;
+    if ((type & IOTItem::TYPE_W) == 0
+        && type != IOTItem::TYPE_PSH // 읽기 전용이고 푸시 알람이 아니면 데이터를 서버로 전송
+      || type == IOTItem::TYPE_PSH
+        && mItems[i]->GetData()[0] != '\0') // 푸시알람은 보낼 데이터가 있을 때만 보냄
     {
-      uint8_t l = mItems[i]->GetLength();
       const uint8_t *data = mItems[i]->GetData();
       mStream->write(i);
       crc.Update(i);
@@ -164,6 +174,11 @@ void BrokerComm::SendData()
       crc.Update(l);
       mStream->write(data, l);
       crc.Update(data, l);
+    }
+    if (type == IOTItem::TYPE_PSH
+      && mItems[i]->GetData()[0] != '\0') // 푸시알람은 한번만 보냄
+    {
+      ((IOTItemPsh *)mItems[i])->Set("");
     }
   }
   

@@ -5,3 +5,6 @@ You should install VitconCommon library prior to VitconIOT library. [https://git
 
 ### 1.0.0 (2017-06-12)
 Initial release. VitconBrokerComm and VitconIOTItem are for VITCON IoT broker server version 1.0.X
+
+### 1.1.0 (2017-06-30)
+Push alarm function added.

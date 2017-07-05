@@ -1,10 +1,11 @@
 /**
  * Created by Park, Nil on 2017-04-26.
- * Last Revision: 2017-04-26
+ * Last Revision: 2017-06-30
  *
  * 본 모듈은 Vitcon IOT 서버와의 통신에 사용되는 IOT 아이템을 정의한 것이다.
  *
  * Park, Nil (2017-04-26): 소스코드 관리 시작
+ * Park, Nil (2017-06-30): 푸쉬 알람을 위한 아이템 타입 추가
  */
 
 #ifndef VITCON_IOTITEM_H_
@@ -17,11 +18,11 @@ namespace vitcon
   class IOTItem
   {
   public:
-public:
-    static const uint8_t TYPE_BIN = 0x00;
-    static const uint8_t TYPE_INT = 0x01;
-    static const uint8_t TYPE_FLO = 0x02;
-    static const uint8_t TYPE_STR = 0x03;
+    static const uint8_t TYPE_BIN = 0x00; // binary (1byte)
+    static const uint8_t TYPE_INT = 0x01; // int (4byte)
+    static const uint8_t TYPE_FLO = 0x02; // float (4byte)
+    static const uint8_t TYPE_STR = 0x03; // string type
+    static const uint8_t TYPE_PSH = 0x04; // push alarm
     static const uint8_t TYPE_R = 0x00;
     static const uint8_t TYPE_W = 0x80;
     IOTItem();
@@ -102,6 +103,22 @@ public:
   private:
     char mData[LEN];
     void (* mFunc)(const char *);
+  };
+  
+  class IOTItemPsh: public IOTItem
+  {
+  public:
+    static const uint8_t LEN = 100;
+    IOTItemPsh();
+    // Type specific interface functions
+    const char * Get();
+    void Set(const char * val);
+    // Common interface functions
+    const uint8_t * GetData();
+    void SetData(const uint8_t *data);
+    void Written();
+  private:
+    char mData[LEN];
   };
 }
 

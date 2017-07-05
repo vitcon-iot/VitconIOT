@@ -1,6 +1,6 @@
 /**
  * Created by Park, Nil on 2017-04-26.
- * Last Revision: 2017-04-26
+ * Last Revision: 2017-06-30
  *
  * VitconIOTItem.h의 Description 참조
  */
@@ -9,7 +9,7 @@
 
 using namespace vitcon;
 
-static const uint8_t TYPE_LENGTHS[] = { 1, 4, 4, 32 };
+static const uint8_t TYPE_LENGTHS[] = { 1, 4, 4, 32, 100 };
 
 /* Super Class Functions */
 
@@ -84,6 +84,12 @@ IOTItemStr::IOTItemStr(void (* func)(const char *)): IOTItemStr()
     mType |= TYPE_W;
 }
 
+IOTItemPsh::IOTItemPsh()
+{
+  mType = TYPE_PSH;
+  mLen = TYPE_LENGTHS[mType];
+}
+
 /* Type Specific Get Functions */
 
 bool IOTItemBin::Get()
@@ -102,6 +108,11 @@ float IOTItemFlo::Get()
 }
 
 const char *IOTItemStr::Get()
+{
+  return mData;
+}
+
+const char *IOTItemPsh::Get()
 {
   return mData;
 }
@@ -126,7 +137,21 @@ void IOTItemFlo::Set(float val)
 void IOTItemStr::Set(const char *val)
 {
   for (int i = 0; i < LEN; i++)
+  {
     mData[i] = val[i];
+    if (val[i] == '\0')
+      break;
+  }
+}
+
+void IOTItemPsh::Set(const char *val)
+{
+  for (int i = 0; i < LEN; i++)
+  {
+    mData[i] = val[i];
+    if (val[i] == '\0')
+      break;
+  }
 }
 
 /* Common GetData Functions */
@@ -147,6 +172,11 @@ const uint8_t *IOTItemFlo::GetData()
 }
 
 const uint8_t *IOTItemStr::GetData()
+{
+  return (uint8_t *)mData;
+}
+
+const uint8_t *IOTItemPsh::GetData()
 {
   return (uint8_t *)mData;
 }
@@ -177,6 +207,11 @@ void IOTItemStr::SetData(const uint8_t *data)
     mData[i] = (char)data[i];
 }
 
+void IOTItemPsh::SetData(const uint8_t *data)
+{
+  // do nothing (not writable)
+}
+
 /* Callback Functions */
 
 void IOTItemBin::Written()
@@ -201,4 +236,9 @@ void IOTItemStr::Written()
 {
   if (mFunc != 0)
     mFunc(mData);
+}
+
+void IOTItemPsh::Written()
+{
+  // do nothing (not writable)
 }
