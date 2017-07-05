@@ -7,7 +7,7 @@
  * Attach WIFI-LINK to D0 and D1, Config WIFI-LINK access to Vitcon IOT Broker Server.
  * NTC-LINK should be attached to A1
  *
- * You should install VitconCommon library prior to VitconIOT library.
+ * You should install VitconCommon and VitconLink library prior to VitconIOT library.
  * The minimum interval calling BrokerComm.Run() function should be less than 2ms
  */
 
