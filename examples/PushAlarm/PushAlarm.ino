@@ -13,11 +13,11 @@
  */
 
 #include <VitconBrokerComm.h>
-#include <VitconNTCLink.h>
+#include <VitconNTC.h>
 
 using namespace vitcon;
 
-NTCLink ntc;
+VitconNTC ntc;
 
 /* A set of definition for IOT items */
 #define ITEM_COUNT 2
